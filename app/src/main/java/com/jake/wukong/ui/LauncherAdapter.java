@@ -28,8 +28,8 @@ public class LauncherAdapter extends BaseListAdapter<ApplicationInfo,LauncherAda
     public void onBindViewHolder(ViewHolder holder, int position) {
         ApplicationInfo info = getItem(position);
         if (info != null) {
-            holder.ivIcon.setImageResource(info.icon);
-            holder.tvName.setText(info.name);
+            holder.ivIcon.setImageDrawable(info.loadIcon(mContext.getPackageManager()));
+            holder.tvName.setText(info.loadLabel(mContext.getPackageManager()));
         }
     }
 
@@ -38,7 +38,7 @@ public class LauncherAdapter extends BaseListAdapter<ApplicationInfo,LauncherAda
         return new LauncherAdapter.ViewHolder(ResourceController.getInstance().inflate(R.layout.item_launcher));
     }
 
-    static class ViewHolder extends BaseListAdapter.ViewHolder {
+    static class ViewHolder extends BaseViewHolder {
         ImageView ivIcon;
         TextView tvName;
 
