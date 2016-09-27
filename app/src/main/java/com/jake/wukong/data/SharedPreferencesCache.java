@@ -62,6 +62,21 @@ public final class SharedPreferencesCache {
         mSharedPreferences.edit().putString(key, value).commit();
     }
 
+    /**
+     * delete cache by key
+     *
+     * @param key
+     */
+    public void remove(String key) {
+        remove(DEFAULT_CACHE_NAME, key);
+    }
+
+    public void remove(String cacheName, String key) {
+        checkInstall();
+        checkSharedPreferences(cacheName);
+        mSharedPreferences.edit().remove(key).commit();
+    }
+
 
     /**
      * get cache

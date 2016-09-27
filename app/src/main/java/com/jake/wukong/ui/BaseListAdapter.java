@@ -189,6 +189,13 @@ public abstract class BaseListAdapter<Entity, ViewHolder extends BaseViewHolder>
         return null;
     }
 
+    public boolean del(Entity entity) {
+        if (ObjectUtil.isNotNull(mList) && ObjectUtil.isNotNull(entity)) {
+            return mList.remove(entity);
+        }
+        return false;
+    }
+
 
     public void clear() {
         if (ObjectUtil.isNotNull(mList)) {
