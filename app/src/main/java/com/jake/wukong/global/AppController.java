@@ -2,6 +2,7 @@ package com.jake.wukong.global;
 
 import android.content.Context;
 
+import com.jake.wukong.hook.cache.DataDirManager;
 import com.jake.wukong.data.SharedPreferencesCache;
 
 /**
@@ -21,6 +22,7 @@ public class AppController {
         mContext = context;
         ResourceController.getInstance().install(context);
         SharedPreferencesCache.getInstance().install(context);
+        DataDirManager.getInstance().install(context);
     }
 
     public Context getContext() {

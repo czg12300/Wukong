@@ -1,8 +1,10 @@
 package com.jake.wukong.data;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -65,6 +67,12 @@ public class DataModel {
         list = temp;
         Collections.sort(list, new ApplicationInfo.DisplayNameComparator(pm));
         return list;
+    }
+    public static List<ResolveInfo> getResolveInfoLists(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        return packageManager.queryIntentActivities(intent, 0);
     }
 
     public static String appInfoToJson(ApplicationInfo info) {

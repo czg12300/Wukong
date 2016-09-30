@@ -2,6 +2,7 @@ package com.jake.wukong.ui;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ResolveInfo;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,7 +19,7 @@ import com.jake.wukong.global.ResourceController;
  */
 
 
-public class LauncherAdapter extends BaseListAdapter<ApplicationInfo,LauncherAdapter.ViewHolder> {
+public class LauncherAdapter extends BaseListAdapter<ResolveInfo,LauncherAdapter.ViewHolder> {
 
     public LauncherAdapter(Context context) {
         super(context);
@@ -26,7 +27,7 @@ public class LauncherAdapter extends BaseListAdapter<ApplicationInfo,LauncherAda
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ApplicationInfo info = getItem(position);
+        ResolveInfo info = getItem(position);
         if (info != null) {
             holder.ivIcon.setImageDrawable(info.loadIcon(mContext.getPackageManager()));
             holder.tvName.setText(info.loadLabel(mContext.getPackageManager()));

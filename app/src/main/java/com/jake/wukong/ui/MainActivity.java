@@ -1,8 +1,13 @@
 package com.jake.wukong.ui;
 
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +20,7 @@ import com.jake.wukong.R;
 import com.jake.wukong.data.DataModel;
 import com.jake.wukong.data.SharedPreferencesCache;
 import com.jake.wukong.global.Logic;
+import com.jake.wukong.hook.proxy.ProxyActivity;
 import com.jake.wukong.utils.ToastUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,19 +37,25 @@ public class MainActivity extends AppCompatActivity {
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         gridView = (GridView) findViewById(R.id.gridView);
         mAdapter = new LauncherAdapter(this);
-        mAdapter.add(DataModel.getDoubleOpenAppInfo(this));
+        mAdapter.add(DataModel.getResolveInfoLists(this));
         gridView.setAdapter(mAdapter);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 SelectAppActivity.startActivityForResult(v.getContext(), REQUEST_CODE);
             }
         });
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ApplicationInfo info = mAdapter.getItem(position);
-                ToastUtil.show(info.loadLabel(getPackageManager()));
+                ResolveInfo info = mAdapter.getItem(position);
+                // 应用的包名
+                String pkg = info.activityInfo.packageName;
+                // 应用的主Activity
+                String cls = info.activityInfo.name;
+                ComponentName componentName = new ComponentName(pkg, cls);
+                ProxyActivity.P0.start(getApplicationContext(), componentName);
             }
         });
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -55,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showOptDialog(final ApplicationInfo info) {
+    private void showOptDialog(final ResolveInfo info) {
         if (info == null) {
             return;
         }
@@ -64,17 +76,17 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("创建快捷方式", new DialogInterface.OnClickListener() { //设置确定按钮
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Logic.addShortcut(MainActivity.this, "+" + info.loadLabel(getPackageManager()), R.mipmap.ic_launcher, MainActivity.class);
-                dialog.dismiss(); //关闭dialog
+                dialog.dismiss();
+                Logic.addShortcut(MainActivity.this, info, "+" + info.loadLabel(getPackageManager()));
             }
         });
         builder.setNegativeButton("删除", new DialogInterface.OnClickListener() { //设置取消按钮
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                SharedPreferencesCache.getInstance().remove(info.packageName);
+                dialog.dismiss();
+                SharedPreferencesCache.getInstance().remove(info.resolvePackageName);
                 mAdapter.del(info);
                 mAdapter.notifyDataSetChanged();
-                dialog.dismiss();
             }
         });
 
@@ -88,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
             ApplicationInfo info = data.getParcelableExtra("appinfo");
             if (info != null) {
                 SharedPreferencesCache.getInstance().put(info.packageName, DataModel.appInfoToJson(info));
-                mAdapter.add(info);
-                mAdapter.notifyDataSetChanged();
+//                mAdapter.add(info);
+//                mAdapter.notifyDataSetChanged();
             }
         }
     }
